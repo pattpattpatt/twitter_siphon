@@ -24,6 +24,7 @@ def search_db(db_name, coll_name):
             return True
     return False
 
+
 class Tweets:
     def __init__(self):
 
@@ -34,12 +35,8 @@ class Tweets:
         self.OAUTH_TOKEN = auth_keys["OAUTH_TOKEN"]
         self.OAUTH_TOKEN_SECRET = auth_keys["OAUTH_TOKEN_SECRET"]
 
-        self.api = twitter.Api(
-            self.CONSUMER_KEY,
-            self.CONSUMER_SECRET,
-            self.OAUTH_TOKEN,
-            self.OAUTH_TOKEN_SECRET,
-            sleep_on_rate_limit=True)
+        self.api = twitter.Api
+
 
         # Statistics
         self.count = 0
@@ -60,6 +57,7 @@ class TimelineStatuses(ReadFromDatabase):
 
 
 db_limit_lock = BoundedSemaphore(100)
+
 
 class RequestAndStore(Tweets):
     def __init__(self):
@@ -103,7 +101,6 @@ class RequestAndStore(Tweets):
         raise NoSubClass(type(self).__name__)
 
 
-
 class TimelineStatusesRS(RequestAndStore):
     def __init__(self, name):
         super().__init__()
@@ -129,6 +126,7 @@ class TimelineStatusesRS(RequestAndStore):
             max_id=last_id,
             exclude_replies=True,
             trim_user=True)
+
 
 class Subject:
     def __init__(self, subject):
@@ -160,6 +158,10 @@ class SubjectRS(RequestAndStore):
             count=200)
 
 
+class TweetStreamHandler(Tweets):
+    def __init__(self, filters):
+        super().__init__()
+        self.stream = self.api.GetStreamFilter(track=filters)
 
 if __name__ == "__main__":
     test = TimelineStatuses("willdstrong")
