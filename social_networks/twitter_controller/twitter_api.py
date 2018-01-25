@@ -35,7 +35,12 @@ class Tweets:
         self.OAUTH_TOKEN = auth_keys["OAUTH_TOKEN"]
         self.OAUTH_TOKEN_SECRET = auth_keys["OAUTH_TOKEN_SECRET"]
 
-        self.api = twitter.Api
+        self.api = twitter.Api(
+            self.CONSUMER_KEY,
+            self.CONSUMER_SECRET,
+            self.OAUTH_TOKEN,
+            self.OAUTH_TOKEN_SECRET,
+            sleep_on_rate_limit=True)
 
 
         # Statistics

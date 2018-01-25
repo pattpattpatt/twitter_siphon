@@ -12,7 +12,6 @@ class Database:
         except KeyError:
         # uh oh. This config doesn't exist. Create db
             print("DB doesn't exist in config.")
-
             return
 
 
@@ -44,6 +43,16 @@ class Database:
     def search_collection_name(self, name):
         pass
 
+    """Creates a bulk upload based on list of write operations"""
+    def bulk_write(self, collection_name, request_payload):
+        if collection_name == 'tweets':
+            return self.db.tweets.bulk_write(request_payload, ordered=False)
+        elif collection_name == 'users':
+            return self.db.users.bulk_write(request_payload, ordered=False)
+        elif collection_name == 'links':
+            return self.db.links.bulk_write(request_payload, ordered=False)
+        else:
+            return None
 
 if __name__ == "__main__":
     db = Database('twiter_test')
