@@ -18,7 +18,6 @@ class TweetStreamInterface:
         print('****** Twitter Siphon ******\n\n')
         while True:
             cmd_list = input('>>>: ').split(' ')
-            print(cmd_list)
             if cmd_list[0] == 'start':
                 if self.api is None:
                     self._init_api()
@@ -55,10 +54,10 @@ class TweetStreamInterface:
             self.streams[name] = self.api.GetStreamFilter(track=filters)
             stream_dict = {'stream': self.streams[name],
                            'name': name}
-            TweetStreamHandler(stream_dict, TweetStreamParser()).parse_tweets_in_stream()
+            TweetStreamHandler(stream_dict, TweetStreamParser(), self.api).parse_and_upload_stream()
             return 'Started: {}'.format(name)
         except ValueError as e:
-            return e
+            print(e)
 
 
 

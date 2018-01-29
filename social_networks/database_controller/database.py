@@ -54,6 +54,7 @@ class Database:
         else:
             return None
 
+
 if __name__ == "__main__":
     db = Database('twiter_test')
     # db.collections()

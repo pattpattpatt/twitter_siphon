@@ -1,5 +1,4 @@
-from social_networks.database_controller.database import Database
-
+from twitter.models import User
 
 class TweetStreamParser():
     def __init__(self):
@@ -14,18 +13,30 @@ class TweetStreamParser():
                          retweet id's,
         Returns: dictionary representing tweet document to be imported"""
     def parse_tweet(self, tweet):
-
-        print(tweet)
+        return {
+            '_id': tweet['id_str'],
+            'usr_id': tweet['user']['id_str'],
+            'text': tweet['text'],
+            'hashtags': self.hashtags_from_tweet(tweet),
+            'links': self.links_from_tweet(tweet),
+            'in_reply_to_status_id': tweet['in_reply_to_status_id_str']}
 
     # Returns a list of hashtags, or an empty list if no hashtags
     def hashtags_from_tweet(self, tweet):
-        pass
+        return [tag['text'] for tag in tweet['entities']['hashtags']]
 
     # Returns a list of link dictionaries
     def links_from_tweet(self, tweet):
-        pass
+        return [{'short_url': url['url'], 'full_url': url['expanded_url']} for url in tweet['entities']['urls']]
 
-    def user_from_tweet(self):
-        pass
+    def parse_user(self, user):
+        return {
+            '_id': str(user['id']),
+            'following': user['following'] if 'following' in user else [],
+            'pop_tweets': [],
+            'num_pop_tweets': 0
+        }
+
+
 
 

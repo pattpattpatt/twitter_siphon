@@ -163,11 +163,6 @@ class SubjectRS(RequestAndStore):
             count=200)
 
 
-class TweetStreamHandler(Tweets):
-    def __init__(self, filters):
-        super().__init__()
-        self.stream = self.api.GetStreamFilter(track=filters)
-
 if __name__ == "__main__":
     test = TimelineStatuses("willdstrong")
     # test.request_tweets_from_api()
