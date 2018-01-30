@@ -7,38 +7,21 @@ from social_networks.twitter_controller import __credential_file__ as twitter_cr
 import json
 import twitter
 
-
 class TweetStreamInterface:
     def __init__(self):
         self.streams = {}
         self.api = None
 
-
-    def take_input(self):
-        print('****** Twitter Siphon ******\n\n')
-        while True:
-            cmd_list = input('>>>: ').split(' ')
-            if cmd_list[0] == 'start':
-                if self.api is None:
-                    self._init_api()
-                print(self.create_and_start_stream(cmd_list[1], cmd_list[2:]))
-            elif cmd_list[0] == 'stop':
-                if cmd_list[1] == 'api':
-                    # first kill stream
-                    for s in self.streams:
-                        self.stop_stream(s)
-                        print('Stopped stream: {}'.format(s['name']))
-                    # then kill api
-                    self.stop_api()
-
-                elif cmd_list[1] == 'stream':
-                    for s in self.streams:
-                        if s['name'] == cmd_list[2]:
-                            self.stop_stream(s)
-                            print('Stopped stream: {}'.format(s['name']))
-                            break
-            else:
-                print('Invalid Input: {} is not a valid command'.format(cmd_list[0]))
+    def take_input(self, cmd_list):
+        args = cmd_list['args'].split(',')
+        if cmd_list['task'] == 'start':
+            if self.api is None:
+                self._init_api()
+            return self.create_and_start_stream(cmd_list['db'], args)
+        elif cmd_list['task'] == 'stop':
+            return self.stop_stream(cmd_list, args)
+        else:
+            return 'Invalid Input: {} is not a valid command'.format(cmd_list['task'])
 
     def _init_api(self):
         auth = self.get_credentials()
@@ -61,8 +44,22 @@ class TweetStreamInterface:
 
 
 
-    def stop_stream(self, stream):
-        pass
+    def stop_stream(self, cmd_list, args):
+        if cmd_list['mode'] == 'api':
+            # first kill stream
+            for s in self.streams:
+                self.stop_stream(s)
+                print('Stopped stream: {}'.format(s['name']))
+            # then kill api
+            self.stop_api()
+            return 'Success! Killed {}'.format(args[0])
+
+        elif cmd_list[1] == 'stream':
+            for s in self.streams:
+                if s['name'] == cmd_list[2]:
+                    self.stop_stream(s)
+                    print('Stopped stream: {}'.format(s['name']))
+                    break
 
     def stop_api(self):
         pass
@@ -71,6 +68,7 @@ class TweetStreamInterface:
         with open(twitter_cred, 'r') as file:
             auth_keys = json.load(file)
         return auth_keys
+
 
 if __name__ == '__main__':
     TweetStreamInterface().take_input()

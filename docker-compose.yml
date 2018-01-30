@@ -1,5 +1,5 @@
 version: '2'
 services:
-  graph-tool:
-    build: ./
+  twitter-siphon:
+    build: .
     image: dcagatay/graph-tool

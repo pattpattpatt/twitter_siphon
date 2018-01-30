@@ -7,7 +7,7 @@ import json
 import twitter
 import math
 from pymongo.operations import *
-from pymongo.errors import BulkWriteError
+from pymongo.errors import *
 
 
 class TweetStreamHandler(Database):
@@ -36,7 +36,11 @@ class TweetStreamHandler(Database):
 
             # Upload batch of tweets and clear payload
             if len(tweet_payload) >= self.PAYLOAD_LIMIT:
-                self.collect_bulk_upload(tweet_payload, 'insert')
+                if self.collect_bulk_upload(tweet_payload, 'tweets') == 0:
+                    print('TWEETS: Upload Success!')
+                else:
+                    print('TWEETS: Upload Failure!')
+
                 tweet_payload.clear()
 
             # Handle user search and upload
@@ -58,7 +62,10 @@ class TweetStreamHandler(Database):
                 print(user)
 
         # Bulk upload
-        self.collect_bulk_upload(upload_data, 'upsert_users', )
+        if self.collect_bulk_upload(upload_data, 'users') == 0:
+            print('USER: Upload Success!')
+        else:
+            print('USER: Upload Failure')
 
     def get_needed_users(self, usr_list):
         search_list = []
@@ -72,25 +79,18 @@ class TweetStreamHandler(Database):
         return search_list
 
     """compiles insert commands and sends to db.bulk_upload"""
-    def collect_bulk_upload(self, data_payload, mode, filter={}):
-        #print(data_payload)
+    def collect_bulk_upload(self, data_payload, collection, mode='upsert'):
         insert_cmds = []
-
-        # Cases for mode
-        if mode == 'insert':
+        if mode == 'upsert':
             for item in data_payload:
-                insert_cmds.append(InsertOne(item))
-
+                insert_cmds.append(ReplaceOne({'_id': item['_id']}, item, upsert=True))
             try:
-                self.bulk_write('tweets', insert_cmds)
+                self.bulk_write(collection, insert_cmds)
             except BulkWriteError as bwe:
-                print(bwe.details)
+                print('{} ERROR: {}'.format(collection.capitalize(), bwe.details))
+                return 1
+            except InvalidOperation as e:
+                print('{} ERROR: {}'.format(collection.capitalize(), e))
+                return 1
+            return 0
 
-        elif mode == 'upsert_users':
-            for item in data_payload:
-                insert_cmds.append(UpdateOne(filter, item, upsert=True))
-
-            try:
-                self.bulk_write('users', insert_cmds)
-            except BulkWriteError as bwe:
-                print(bwe.details)
