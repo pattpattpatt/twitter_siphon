@@ -17,9 +17,9 @@ class TweetStreamInterface:
         if cmd_list['task'] == 'start':
             if self.api is None:
                 self._init_api()
-            return self.create_and_start_stream(cmd_list['db'], args)
+            return self.create_and_start_stream(cmd_list['name'], args)
         elif cmd_list['task'] == 'stop':
-            return self.stop_stream(cmd_list, args)
+            return self.stop_stream(cmd_list['name'], cmd_list['mode'], args)
         else:
             return 'Invalid Input: {} is not a valid command'.format(cmd_list['task'])
 
@@ -44,8 +44,8 @@ class TweetStreamInterface:
 
 
 
-    def stop_stream(self, cmd_list, args):
-        if cmd_list['mode'] == 'api':
+    def stop_stream(self, name, mode, args):
+        if mode == 'api':
             # first kill stream
             for s in self.streams:
                 self.stop_stream(s)
@@ -54,12 +54,11 @@ class TweetStreamInterface:
             self.stop_api()
             return 'Success! Killed {}'.format(args[0])
 
-        elif cmd_list[1] == 'stream':
-            for s in self.streams:
-                if s['name'] == cmd_list[2]:
-                    self.stop_stream(s)
-                    print('Stopped stream: {}'.format(s['name']))
-                    break
+        elif mode == 'stream':
+            try:
+                self.stop_stream(name)
+            except TypeError as te:
+                raise te
 
     def stop_api(self):
         pass

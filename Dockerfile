@@ -3,7 +3,7 @@ MAINTAINER Dogukan Cagatay <dcagatay@gmail.com>
 
 ADD ./ /twitter-siphon/
 WORKDIR /twitter-siphon
-EXPOSE "80:80"
+EXPOSE "5000:5000"
 
 RUN echo "deb http://downloads.skewed.de/apt/xenial xenial universe" >> /etc/apt/sources.list && \
 	echo "deb-src http://downloads.skewed.de/apt/xenial xenial universe" >> /etc/apt/sources.list
@@ -16,5 +16,5 @@ RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 ENV PYTHONPATH /twitter-siphon
-CMD ["python3", "social_networks/stream_controller/stream_interface.py"]
+CMD ["python3", "social_networks/network_controller/http_controller.py"]
 
