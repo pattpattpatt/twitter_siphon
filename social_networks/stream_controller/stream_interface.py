@@ -17,6 +17,7 @@ class TweetStreamInterface:
         if cmd_list['task'] == 'start':
             if self.api is None:
                 self._init_api()
+            print('CREATE STREAM {}'.format(cmd_list['name']))
             return self.create_and_start_stream(cmd_list['name'], args)
         elif cmd_list['task'] == 'stop':
             return self.stop_stream(cmd_list['name'], cmd_list['mode'], args)
@@ -70,4 +71,4 @@ class TweetStreamInterface:
 
 
 if __name__ == '__main__':
-    TweetStreamInterface().take_input()
+    TweetStreamInterface().take_input({'task': 'start', 'name': 'test', 'args': 'donald,trump,state of the union,sotu,stateoftheunion'})

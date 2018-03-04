@@ -19,7 +19,8 @@ class TweetStreamParser():
             'text': tweet['text'],
             'hashtags': self.hashtags_from_tweet(tweet),
             'links': self.links_from_tweet(tweet),
-            'in_reply_to_status_id': tweet['in_reply_to_status_id_str']}
+            'in_reply_to_status_id': tweet['in_reply_to_status_id_str'],
+            'created_at': tweet['created_at']}
 
     # Returns a list of hashtags, or an empty list if no hashtags
     def hashtags_from_tweet(self, tweet):

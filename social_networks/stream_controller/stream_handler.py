@@ -8,6 +8,7 @@ import twitter
 import math
 from pymongo.operations import *
 from pymongo.errors import *
+import datetime
 
 
 class TweetStreamHandler(Database):
@@ -44,9 +45,9 @@ class TweetStreamHandler(Database):
                 tweet_payload.clear()
 
             # Handle user search and upload
-            if len(user_list) >= self.PAYLOAD_LIMIT:
-                self.search_and_upload_users(user_list)
-                user_list.clear()
+            # if len(user_list) >= self.PAYLOAD_LIMIT:
+            #     self.search_and_upload_users(user_list)
+            #     user_list.clear()
 
     def search_and_upload_users(self, users):
         upload_data = []

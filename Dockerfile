@@ -3,7 +3,6 @@ MAINTAINER Dogukan Cagatay <dcagatay@gmail.com>
 
 ADD ./ /twitter-siphon/
 WORKDIR /twitter-siphon
-EXPOSE "5000:5000"
 
 RUN echo "deb http://downloads.skewed.de/apt/xenial xenial universe" >> /etc/apt/sources.list && \
 	echo "deb-src http://downloads.skewed.de/apt/xenial xenial universe" >> /etc/apt/sources.list
