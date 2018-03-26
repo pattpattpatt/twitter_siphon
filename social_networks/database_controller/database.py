@@ -6,8 +6,8 @@ class Database:
     def __init__(self, db_name):
         from social_networks.database_controller.config import config_file
         try:
-            user = config_file[db_name]['USER']
-            pwd = config_file[db_name]['PWD']
+            user = config_file[db_name]['User']
+            pwd = config_file[db_name]['Pwd']
             url = config_file[db_name]['URL']
         except KeyError:
         # uh oh. This config doesn't exist. Create db
@@ -56,5 +56,5 @@ class Database:
 
 
 if __name__ == "__main__":
-    db = Database('twiter_test')
+    db = Database('twitter_siphon')
     # db.collections()

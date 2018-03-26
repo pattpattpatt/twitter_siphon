@@ -163,6 +163,24 @@ class SubjectRS(RequestAndStore):
             count=200)
 
 
+class UserProfile:
+    def __init__(self, screen_name):
+        if not search_db("twitter_siphon", screen_name): UserProfileRS(screen_name)
+
+class UserProfileRS(RequestAndStore):
+    def __init__(self, screen_name, user_type):
+        super().__init__()
+        self.collection = user_type
+        self.screen_name = screen_name
+
+        # If api call is needed
+        def _api_call(self):
+            pass
+
+        def _tweets_since_last_id(self, last_id):
+            pass
+
+
 if __name__ == "__main__":
     test = TimelineStatuses("willdstrong")
     # test.request_tweets_from_api()

@@ -12,3 +12,7 @@ class WriteToDatabase(Database):
     def add_data(self, data):
         post_id = self.collection.insert_one(data).inserted_id
         return post_id
+
+    def update_record(self, filter, update={}):
+        record_id = self.collection.update_one(filter=filter, update=update)
+        return record_id
