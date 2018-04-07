@@ -1,0 +1,14 @@
+[test]
+User: streamAPI
+Pwd: xyz123
+URL: 127.0.0.1:27017
+
+[prod]
+User: prodUser
+Pwd: 12345678
+URL: 127.0.0.1:27017
+
+[twitter_siphon]
+User: siphon_user
+Pwd: 12345678
+URL: 127.0.0.1:27017
