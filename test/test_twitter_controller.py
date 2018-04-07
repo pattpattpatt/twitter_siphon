@@ -1,5 +1,5 @@
 import unittest
-from social_networks.twitter_controller.twitter_api import *
+from data.twitter_interface.twitter_api import *
 
 
 @unittest.skip

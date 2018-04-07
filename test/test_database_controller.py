@@ -1,7 +1,7 @@
 import unittest
-from social_networks.database_controller.database import Database
-from social_networks.database_controller.write import WriteToDatabase
-from social_networks.database_controller.read import ReadFromDatabase
+from data.db_interface.database import Database
+from data.db_interface.write import WriteToDatabase
+from data.db_interface.read import ReadFromDatabase
 
 
 class TestDatabase(unittest.TestCase):
