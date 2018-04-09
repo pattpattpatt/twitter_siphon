@@ -13,82 +13,146 @@
 from data.twitter_interface.twitter_api import Tweets
 from data.db_interface.write import WriteToDatabase
 from data.db_interface.read import ReadFromDatabase
+from data.models.site_relation import SiteRelation
+from controllers.helpers.site_relation_sync_helper import SiteRelationSyncHelper
 from datetime import datetime
 from time import sleep
 
 
 class SiteRelationController:
-    def __init__(self, origin_site, dest_site):
+    def __init__(self, origin_site, destination_site):
         self.api = Tweets().api
-        self.db_reader = ReadFromDatabase('twitter_siphon', 'news_sites')
-        self.db_writer = WriteToDatabase('twitter_siphon', 'news_sites')
-        self.origin_site = origin_site
-        self.destination_site = dest_site
+        self.site_reader = ReadFromDatabase('twitter_siphon', 'news_sites')
+        self.relations_reader = ReadFromDatabase('twitter_siphon', 'site_relations')  # Reads from the news sites collection
+        self.relations_writer = WriteToDatabase('twitter_siphon', 'site_relations')
+        self.origin_site_sn = origin_site.screen_name
+        self.destination_site_sn = destination_site.screen_name
+        self.num_common_followers = 0
+        self.normalized_distance = 1
+        self.last_db_sync = None
 
-        # Initialize instance models
-        self._init_instance_state(origin_site, dest_site)
+        #create relation in db if not exists
+        self.create_relation()
 
-    def relation_from_db(self, origin_site_id, destination_site_id):
-        print('\n*** relation_from_db ***')
+    def site_from_db(self):
+        filter = {'origin_site_sn': self.origin_site_sn,
+                  'destination_site_sn': self.destination_site_sn}
 
-        filter = {'origin_site_id': origin_site_id,
-                  'destination_site_id': destination_site_id}
+        cursor = self.relations_reader.simple_find(filter=filter, limit=1)
 
-        cursor = self.db_reader.simple_find(filter=filter, limit=1)
-        print('{}'.format(cursor))
+        # If exists in DB
         if cursor.count() == 1:
-            print('Object exists in DB as id: {}'.format(cursor[0]['_id']))
-            return cursor[0]
+            return True
 
-        # If not exist in database
+        # If not exist in DB
         elif cursor.count() == 0:
-            print('{} Is not in DB')
             return None
 
         else:
             return None
 
-    def update_relation(self, origin_site, destination_site):
+    def create_relation(self):
+        if self.site_from_db() is None:
+            print('creating site_relation: {}_{}'.format(self.origin_site_sn, self.destination_site_sn))
+            self.num_common_followers = self.update_num_common_followers(origin_sn=self.origin_site_sn,
+                                                                         destination_sn=self.destination_site_sn)
+            self.sync_with_db()
+
+    def update_relation(self):
+        # print('updating site_relation: {}_{}'.format(self.origin_site_sn, self.destination_site_sn))
         #Creates new relation from two sites' screen names
+        self.num_common_followers = self.update_num_common_followers(origin_sn=self.origin_site_sn,
+                                                                     destination_sn=self.destination_site_sn)
+        self.normalized_distance = self.normalize_relation_distance(distance=self.num_common_followers)
+        self.sync_with_db()
+        # print(self.__dict__)
 
-        pass
+    def sync_with_db(self):
+        self.__dict__ = SiteRelationSyncHelper(self, SiteRelation()).sync_obj_data_with_db()
 
-    def destroy_relation(self, origin, destination):
-        pass
+    def update_num_common_followers(self, origin_sn, destination_sn):
+        pipeline = self.common_follower_pipeline(origin_sn,
+                                                 destination_sn)
 
-    def save(self):
-        #Save all updates to the DB
-        pass
+        for result in self.site_reader.aggregate(pipeline=pipeline):
+            new_common_followers = result['num_common_followers']
+        return new_common_followers
 
-    def _init_instance_state(self, origin_site_sn, destination_site_sn):
+    def common_follower_pipeline(self, origin_sn, destination_sn):
+         return [
+                  {"$match":
+                    {"$or":
+                      [
+                        {'screen_name': origin_sn},
+                        {'screen_name': destination_sn}
+                      ]
+                    }
+                  },
+                  {"$group": {"_id": None,
+                              "followers_set": {"$push": '$followers'}
+                             }
+                   },
+                  {"$project":
+                    {'num_common_followers':
+                      {"$size":
+                        { "$setIntersection":
+                          [
+                              {"$arrayElemAt": ['$followers_set', 0]},
+                              {"$arrayElemAt": ['$followers_set', 1]}
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
 
-        print('*** _init_instance_state ***')
+    def max_followers_pipeline(self):
+        return [
+            {"$group": {"_id": None,
+                        "max_common_followers":
+                            {"$max": '$num_common_followers'}
+                       }
+             },
+            {"$project": {'max_common_followers': 1}}
+        ]
 
-        data = {}
-        # test for relation in db
-        db_data = self.relation_from_db(origin_site_id=origin_site_sn, destination_site_id=destination_site_sn)
+    def min_followers_pipeline(self):
+        return [
+            {"$group": {"_id": None,
+                        "min_common_followers":
+                            {"$min": '$num_common_followers'}
+                        }
+             },
+            {"$project": {'min_common_followers': 1}}
+        ]
 
-        # If site exists in db, initialize object state with that models
-        # Else, get init from Twitter
-        if db_data is not None:
-            # print('Initializing news site from database...')
-            self._init_instance_variables(db_data)
+    def normalize_relation_distance(self, distance):
+        """
+        This normalization function takes the raw followers in common,
+        Converts it into a decimal proportional to the range of followers in common for the whole map, and
+        Inverts it in order to make the maximum followers in common, the shortest distance
+        """
+        distance = int(distance)
+        range_max = self.max_followers_count()
+        range_min = self.min_followers_count()
 
-        else:
-            # print('Initializing news site from twitter...\n')
-            data = self.create_relation(origin_site=origin_site_sn, destination_site=destination_site_sn)
-            # print('Syncing with DB...\n')
-            self._init_instance_variables(data)
-            self.save()
+        ranged_distance = (distance - range_min)/(range_max - range_min)
 
-    def _init_instance_variables(self, data):
-        self.origin_site_id = self.origin_site._mongo_id()
-        self.destination_site_id = self.destination_site._mongo_id()
-        self._init_instance_variables_from_data(data)
+        #invert distance
+        normalized_distance = 1 - ranged_distance
 
-    def _init_instance_variables_from_data(self, data):
-        self.last_db_sync = data['last_db_sync']
-        self.num_common_followers = data['num_common_followers']
-        self.normalized_distance = data['normalized_distance']
+        return normalized_distance
+    
+    def max_followers_count(self):
+        max_common_followers = 0
+        pipeline = self.max_followers_pipeline()
+        for result in self.relations_reader.aggregate(pipeline=pipeline):
+            max_common_followers = result['max_common_followers']
+        return max_common_followers
 
-# db.news_sites.aggregate([ { $match : { $or : [ {'screen_name': 'TheEconomist' }, {'screen_name': 'BBC'} ]}},{ $project: {'followers':1, '_id': 0}}, {$project: {$size: 'followers'}}])
+    def min_followers_count(self):
+        min_common_followers = 0
+        pipeline = self.min_followers_pipeline()
+        for result in self.relations_reader.aggregate(pipeline=pipeline):
+            min_common_followers = result['min_common_followers']
+        return min_common_followers

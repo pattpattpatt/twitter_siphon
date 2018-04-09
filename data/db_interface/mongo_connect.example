@@ -1,0 +1,4 @@
+[<db_name>]
+User: test_user
+Pwd: password
+URL: 127.0.0.1:27017

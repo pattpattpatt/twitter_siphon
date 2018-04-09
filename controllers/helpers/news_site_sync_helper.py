@@ -1,8 +1,8 @@
-from controllers.handlers.sync_handler import SyncHandler
+from controllers.helpers.sync_helper import SyncHelper
 from datetime import datetime
 
 
-class NewsSiteSyncHandler(SyncHandler):
+class NewsSiteSyncHelper(SyncHelper):
     def __init__(self, site, model):
         super().__init__(site, model)
 

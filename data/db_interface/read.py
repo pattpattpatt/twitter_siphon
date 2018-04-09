@@ -18,3 +18,6 @@ class ReadFromDatabase(Database):
     def simple_find(self, filter, limit):
         return self.collection.find(filter=filter, limit=limit)
 
+    def aggregate(self, pipeline):
+        return self.collection.aggregate(pipeline=pipeline)
+
