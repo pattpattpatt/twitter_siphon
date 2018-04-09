@@ -43,11 +43,11 @@ class MapController:
                 try:
                     print('updating site: {}'.format(site_name))
                     self.sites[site_name].update_followers()
-                    time.sleep((RATE_LIMIT_PERIOD/RATE_LIMIT_TOTAL) + RATE_LIMIT_BUFFER)
+                    # time.sleep((RATE_LIMIT_PERIOD/RATE_LIMIT_TOTAL) + RATE_LIMIT_BUFFER)
                 except TwitterError:
                     print('rate limit exception hit')
                     # wait ~ 15 minutes for Rate Limit to reset
-                    time.sleep(RATE_LIMIT_TOTAL + RATE_LIMIT_BUFFER)
+                    time.sleep(RATE_LIMIT_PERIOD + RATE_LIMIT_BUFFER)
                     # break
 
     def update_site_relations(self):
