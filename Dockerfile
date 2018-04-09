@@ -15,5 +15,5 @@ RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 ENV PYTHONPATH /twitter-siphon
-CMD ["python3", "social_networks/network_controller/http_controller.py"]
+CMD ["python3", "run.py"]
 

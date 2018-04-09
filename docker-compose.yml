@@ -1,19 +1,19 @@
-version: '3'
-services:
-  twitter-siphon:
-    image: pattpattpatt/twitter-siphon
-    deploy:
-      restart_policy:
-        condition: on-failure
-      ports:
-        - '5000:5000'
-  mongo-db:
-    image: mongo
-    deploy:
-      restart_policy:
-        condition: on-failure
-      ports:
-        - '27017:27017'
+#version: '3'
+#services:
+#  twitter-siphon:
+#    image: pattpattpatt/twitter-siphon
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#      ports:
+#        - '5000:5000'
+#  mongo-db:
+#    image: mongo
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#      ports:
+#        - '27017:27017'
 
 
 

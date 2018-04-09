@@ -19,7 +19,7 @@ from itertools import combinations
 RATE_LIMIT_PERIOD = 900.00  # 900 seconds = 15 minutes
 RATE_LIMIT_TOTAL = 15.00    # Total of 15 queries per period
 RATE_LIMIT_BUFFER = 0.5     # Small buffer to add sufficient padding to the delay
-UPDATE_CYCLES = 1            # Number of times to update the whole site list before updating the relations
+UPDATE_CYCLES = 1           # Number of times to update the whole site list before updating the relations
 
 
 class MapController:
@@ -43,12 +43,12 @@ class MapController:
                 try:
                     print('updating site: {}'.format(site_name))
                     self.sites[site_name].update_followers()
-                    # time.sleep((RATE_LIMIT_PERIOD/RATE_LIMIT_TOTAL) + RATE_LIMIT_BUFFER)
+                    time.sleep((RATE_LIMIT_PERIOD/RATE_LIMIT_TOTAL) + RATE_LIMIT_BUFFER)
                 except TwitterError:
                     print('rate limit exception hit')
                     # wait ~ 15 minutes for Rate Limit to reset
                     time.sleep(RATE_LIMIT_PERIOD + RATE_LIMIT_BUFFER)
-                    # break
+
 
     def update_site_relations(self):
         print('UPDATING RELATIONS')
