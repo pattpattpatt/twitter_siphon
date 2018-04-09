@@ -10,7 +10,7 @@ from controllers.helpers.news_site_sync_helper import NewsSiteSyncHelper
 from data.models.news_site import NewsSite
 
 # Constants
-MAX_FOLLOWERS_IN_MEMORY = 20000  # Limit on how many followers to hold in memory
+MAX_FOLLOWERS_IN_MEMORY = 5000  # Limit on how many followers to hold in memory
 
 
 class NewsSiteController:
@@ -90,12 +90,14 @@ class NewsSiteController:
         """ Gets the next page of followers, and updates the cursors for the object """
         next_cursor, previous_cursor, result = self.api.GetFollowerIDsPaged(screen_name=self.screen_name,
                                                                             cursor=self.next_cursor)
-
+        print('{} | {} | {}'.format(next_cursor, previous_cursor, len(result)))
         self.update_operation_state(previous_cursor, next_cursor)
+        print('POST_UPDATE_OPERATION_STATE_DICT: {}'.format(self.__dict__))
         return result
 
     def sync_with_db(self):
         self.__dict__ = NewsSiteSyncHelper(self, NewsSite()).sync_obj_data_with_db()
+        print('POST_SYNC_DICT: {}'.format(self.__dict__))
 
     def find_mongo_id(self):
         return self.db_reader.simple_find({'screen_name': self.screen_name}, limit=1)[0]['_id']

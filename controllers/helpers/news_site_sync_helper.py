@@ -21,6 +21,12 @@ class NewsSiteSyncHelper(SyncHelper):
         self.db_writer.update_record(filter={'screen_name': self.sync_obj_data['screen_name']},
                                      update=update,
                                      upsert=True)
+        #set latest cursor saved
+        self.set_latest_cursor_saved()
+
+        #delete new followers on successful db storage
+        self.delete_new_followers()
+
         return self.sync_obj_data
 
     def map_obj_to_model(self):
@@ -42,6 +48,12 @@ class NewsSiteSyncHelper(SyncHelper):
     def get_followers_update(self):
         return {'$addToSet': {'followers': {'$each': self.sync_obj_data['new_followers']}}}
 
+    def delete_new_followers(self):
+        del self.sync_obj_data['new_followers'][:]
+
     def set_update_time(self):
         # Update the time last updated
         self.sync_obj_data['last_db_sync'] = datetime.now()
+
+    def set_latest_cursor_saved(self):
+        self.sync_obj_data['latest_cursor_saved'] = self.sync_obj_data['previous_cursor']

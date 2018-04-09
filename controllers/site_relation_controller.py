@@ -66,6 +66,7 @@ class SiteRelationController:
 
     def sync_with_db(self):
         self.__dict__ = SiteRelationSyncHelper(self, SiteRelation()).sync_obj_data_with_db()
+        print(self.__dict__)
 
     def update_num_common_followers(self, origin_sn, destination_sn):
         pipeline = self.common_follower_pipeline(origin_sn,
