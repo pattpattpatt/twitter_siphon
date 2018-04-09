@@ -3,7 +3,7 @@ from data.db_interface.write import WriteToDatabase
 from data.db_interface.read import ReadFromDatabase
 
 
-class SyncHandler:
+class SyncHelper:
     def __init__(self, sync_obj, model):
         self.sync_obj_data = sync_obj.__dict__
         self.model = model.__dict__

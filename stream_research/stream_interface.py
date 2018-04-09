@@ -1,6 +1,6 @@
 # Local Imports
 from controllers.stream_controller import TweetStreamHandler
-from controllers.handlers.stream_parser import TweetStreamParser
+from stream_research.stream_parser import TweetStreamParser
 from data.twitter_interface import __credential_file__ as twitter_cred
 
 # Libraries

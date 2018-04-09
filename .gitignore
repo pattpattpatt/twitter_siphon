@@ -3,15 +3,14 @@ __pychache__/*
 __pycache__
 
 # Config files
-/social_networks/twitter_controller/twitter_access.json
-/social_networks/database_controller/mongo_connect
+/data/twitter_interface/twitter_access.json
+/data/db_interface/mongo_connect
 
 # Images
-/social_networks/analysis/graphs/*
+/data/graphs/*
 
 # testing
-/social_networks/analysis/alex_graphing.py
-/social_networks/analysis/testing.py
+/test/testing.py
 
 .idea/
 scripts/

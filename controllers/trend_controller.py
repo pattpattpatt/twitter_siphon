@@ -1,3 +1,8 @@
+"""
+Conceptual framework for trend updater
+"""
+
+
 class TrendController:
     def __init__(self):
         pass

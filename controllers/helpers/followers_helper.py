@@ -1,10 +1,14 @@
+"""
+WORK IN PROGRESS
+"""
+
 # Imports
 from data.db_interface.read import ReadFromDatabase
 from data.db_interface.write import WriteToDatabase
 
 
 # Syncs the new followers with the DB follower list
-class FollowerHelper:
+class FollowersHelper:
     def __init__(self, screen_name, new_followers):
         self.new_followers = new_followers
         self.screen_name = screen_name

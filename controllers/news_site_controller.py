@@ -6,7 +6,7 @@ Class Interface for modifying News Site representations in DB
 from data.db_interface.read import ReadFromDatabase
 from data.db_interface.write import WriteToDatabase
 from data.twitter_interface.twitter_api import Tweets
-from controllers.handlers.news_site_sync_handler import NewsSiteSyncHandler
+from controllers.helpers.news_site_sync_helper import NewsSiteSyncHelper
 from data.models.news_site import NewsSite
 
 # Constants
@@ -95,7 +95,7 @@ class NewsSiteController:
         return result
 
     def sync_with_db(self):
-        self.__dict__ = NewsSiteSyncHandler(self, NewsSite()).sync_obj_data_with_db()
+        self.__dict__ = NewsSiteSyncHelper(self, NewsSite()).sync_obj_data_with_db()
 
     def find_mongo_id(self):
         return self.db_reader.simple_find({'screen_name': self.screen_name}, limit=1)[0]['_id']

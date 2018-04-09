@@ -3,7 +3,8 @@ from data.Utility import threaded
 from controllers.map_controller import MapController
 from data.twitter_interface.twitter_api import Tweets
 from data.models.news_site import NewsSite
-from controllers.handlers.news_site_sync_handler import NewsSiteSyncHandler
+from controllers.helpers.news_site_sync_helper import NewsSiteSyncHelper
+from data.db_interface.read import ReadFromDatabase
 from data.db_interface.read import ReadFromDatabase
 NEWS_SITES = [
     'TheEconomist',
@@ -50,13 +51,45 @@ def test_map_controller(sites):
 
 def test_news_site_sync_handler():
     ns = NewsSiteController(screen_name='BBC')
-    handler = NewsSiteSyncHandler(ns, NewsSite())
+    handler = NewsSiteSyncHelper(ns, NewsSite())
     map = handler.sync_obj_data_with_db()
     print('Map: {}'.format(map))
 
 
 if __name__ == '__main__':
-    MapController(NEWS_SITES).update_sites()
+    MapController(NEWS_SITES).update_map()
+
+    # pipeline = [
+    #     {"$match":
+    #         {"$or":
+    #             [
+    #                 {'screen_name': 'TheEconomist'},
+    #                 {'screen_name': 'BBC'}
+    #             ]
+    #         }
+    #     },
+    #     {"$group": {"_id": None,
+    #                 "followers_set": {"$push": '$followers'}
+    #                 }
+    #      },
+    #     {"$project":
+    #         {'num_common_followers':
+    #             {"$size":
+    #                 {"$setIntersection":
+    #                     [
+    #                         {"$arrayElemAt": ['$followers_set', 0]},
+    #                         {"$arrayElemAt": ['$followers_set', 1]}
+    #                     ]
+    #                 }
+    #             }
+    #         }
+    #     }
+    # ]
+    # counts = []
+    # # print(ReadFromDatabase('twitter_siphon','news_sites').aggregate(pipeline=pipeline).first)
+    # for count in ReadFromDatabase('twitter_siphon','news_sites').aggregate(pipeline=pipeline):
+    #     counts.append(count['num_common_followers'])
+    # print(counts)
 
 #NOTE for tomorrow
 # There needs to be an abstraction here since the performance bottleneck will

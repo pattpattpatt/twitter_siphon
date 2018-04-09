@@ -1,7 +1,7 @@
 # HTTP Server Interface for Dockerization
 
 from flask import *
-from controllers.handlers.stream_interface import TweetStreamInterface
+from stream_research.stream_interface import TweetStreamInterface
 
 app = Flask(__name__)
 
