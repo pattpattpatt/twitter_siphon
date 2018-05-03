@@ -1,5 +1,5 @@
 from graph_tool.all import *
-from analysis import MakeGraph
+from analysis.make_graph import MakeGraph
 
 
 def homophily (g, prop):

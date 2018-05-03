@@ -33,7 +33,7 @@ class MapController:
 
     def update_map(self):
         while True:
-            self.update_sites()
+            # self.update_sites()
             self.update_site_relations()
 
     def update_sites(self):
@@ -41,8 +41,9 @@ class MapController:
             print('UPDATING SITES - Cycle {}'.format(cycle))
             for site_name in self.sites:
                 try:
-                    print('updating site: {}'.format(site_name))
+                    print('\nupdating site: {}'.format(site_name))
                     self.sites[site_name].update_followers()
+                    print(self.api.CheckRateLimit(url='https://api.twitter.com/1.1/followers/ids.json'))
                     time.sleep((RATE_LIMIT_PERIOD/RATE_LIMIT_TOTAL) + RATE_LIMIT_BUFFER)
                 except TwitterError:
                     print('rate limit exception hit')

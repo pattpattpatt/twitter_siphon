@@ -23,6 +23,8 @@ NEWS_SITES = [
     'ForeignAffairs',
     'TheAtlantic']
 
+
+
 @threaded
 def get_follower_list(screen_name):
     site = NewsSiteController(screen_name=screen_name)
@@ -56,40 +58,49 @@ def test_news_site_sync_handler():
     print('Map: {}'.format(map))
 
 
-if __name__ == '__main__':
-    MapController(NEWS_SITES).update_map()
+def get_names:
 
-    # pipeline = [
-    #     {"$match":
-    #         {"$or":
-    #             [
-    #                 {'screen_name': 'TheEconomist'},
-    #                 {'screen_name': 'BBC'}
-    #             ]
-    #         }
-    #     },
-    #     {"$group": {"_id": None,
-    #                 "followers_set": {"$push": '$followers'}
-    #                 }
-    #      },
-    #     {"$project":
-    #         {'num_common_followers':
-    #             {"$size":
-    #                 {"$setIntersection":
-    #                     [
-    #                         {"$arrayElemAt": ['$followers_set', 0]},
-    #                         {"$arrayElemAt": ['$followers_set', 1]}
-    #                     ]
-    #                 }
-    #             }
-    #         }
-    #     }
-    # ]
-    # counts = []
-    # # print(ReadFromDatabase('twitter_siphon','news_sites').aggregate(pipeline=pipeline).first)
-    # for count in ReadFromDatabase('twitter_siphon','news_sites').aggregate(pipeline=pipeline):
-    #     counts.append(count['num_common_followers'])
-    # print(counts)
+if __name__ == '__main__':
+    # MapController(NEWS_SITES).update_map()
+    #
+    # # pipeline = [
+    # #     {"$match":
+    # #         {"$or":
+    # #             [
+    # #                 {'screen_name': 'TheEconomist'},
+    # #                 {'screen_name': 'BBC'}
+    # #             ]
+    # #         }
+    # #     },
+    # #     {"$group": {"_id": None,
+    # #                 "followers_set": {"$push": '$followers'}
+    # #                 }
+    # #      },
+    # #     {"$project":
+    # #         {'num_common_followers':
+    # #             {"$size":
+    # #                 {"$setIntersection":
+    # #                     [
+    # #                         {"$arrayElemAt": ['$followers_set', 0]},
+    # #                         {"$arrayElemAt": ['$followers_set', 1]}
+    # #                     ]
+    # #                 }
+    # #             }
+    # #         }
+    # #     }
+    # # ]
+    # # counts = []
+    # # # print(ReadFromDatabase('twitter_siphon','news_sites').aggregate(pipeline=pipeline).first)
+    # # for count in ReadFromDatabase('twitter_siphon','news_sites').aggregate(pipeline=pipeline):
+    # #     counts.append(count['num_common_followers'])
+    # # print(counts)
+    # api = Tweets().api
+    #
+    # total_followers = 0
+    #
+    # for site in NEWS_SITES:
+    #     total_followers += int(api.GetUser(screen_name=site).followers_count)
+    # print('Days to complete: {}'.format(float(total_followers/5000/(60*24))))
 
 #NOTE for tomorrow
 # There needs to be an abstraction here since the performance bottleneck will

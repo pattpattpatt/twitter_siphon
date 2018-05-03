@@ -58,15 +58,17 @@ class SiteRelationController:
             self.sync_with_db()
 
     def update_relation(self):
+        print('\nUpdating {}_{}'.format(self.origin_site_sn, self.destination_site_sn))
         #Creates new relation from two sites' screen names
         self.num_common_followers = self.update_num_common_followers(origin_sn=self.origin_site_sn,
                                                                      destination_sn=self.destination_site_sn)
+        print(self.num_common_followers)
         self.normalized_distance = self.normalize_relation_distance(distance=self.num_common_followers)
+        print('normalized_distance: {}'.format(self.normalized_distance))
         self.sync_with_db()
 
     def sync_with_db(self):
         self.__dict__ = SiteRelationSyncHelper(self, SiteRelation()).sync_obj_data_with_db()
-        print(self.__dict__)
 
     def update_num_common_followers(self, origin_sn, destination_sn):
         pipeline = self.common_follower_pipeline(origin_sn,
@@ -132,14 +134,18 @@ class SiteRelationController:
         """
         distance = int(distance)
         range_max = self.max_followers_count()
+        print('range_max: {}'.format(range_max))
         range_min = self.min_followers_count()
+        print('range_min: {}'.format(range_min))
 
         try:
             ranged_distance = (distance - range_min)/(range_max - range_min)
+            print('ranged_distance: {}'.format(ranged_distance))
         except ZeroDivisionError:
             # If the sites have no common followers yet,
             # The max and min range will be == and will throw zero division error
             # This defaults the normalized distance to 1 for all relations
+            print('zero error')
             ranged_distance = 0
 
         #invert distance

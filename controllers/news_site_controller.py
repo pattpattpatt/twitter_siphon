@@ -14,8 +14,11 @@ MAX_FOLLOWERS_IN_MEMORY = 5000  # Limit on how many followers to hold in memory
 
 
 class NewsSiteController:
-    def __init__(self, screen_name=None, profile_id=None):
-        self.api = Tweets().api
+    def __init__(self, screen_name=None, api=None):
+        if api is None:
+            self.api = Tweets().api
+        else:
+            self.api = api
         self.db_reader = ReadFromDatabase('twitter_siphon', 'news_sites')
         self.db_writer = WriteToDatabase('twitter_siphon', 'news_sites')
 
@@ -78,6 +81,8 @@ class NewsSiteController:
 
         self.get_next_followers_page()
 
+        print('POST_UPDATE_OPERATION_STATE_DICT: {}'.format(self.__dict__))
+
         if len(self.new_followers) >= MAX_FOLLOWERS_IN_MEMORY:
             self.sync_with_db()
         elif self.exec_state is 'up_to_date':
@@ -92,7 +97,6 @@ class NewsSiteController:
                                                                             cursor=self.next_cursor)
         print('{} | {} | {}'.format(next_cursor, previous_cursor, len(result)))
         self.update_operation_state(previous_cursor, next_cursor)
-        print('POST_UPDATE_OPERATION_STATE_DICT: {}'.format(self.__dict__))
         return result
 
     def sync_with_db(self):

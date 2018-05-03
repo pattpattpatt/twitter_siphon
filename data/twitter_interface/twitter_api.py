@@ -40,7 +40,7 @@ class Tweets:
             self.CONSUMER_SECRET,
             self.OAUTH_TOKEN,
             self.OAUTH_TOKEN_SECRET,
-            sleep_on_rate_limit=True)
+            sleep_on_rate_limit=False)
 
 
         # Statistics
